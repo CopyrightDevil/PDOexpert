@@ -1,10 +1,21 @@
 <?php
+
+
+session_start();
+if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
+    header("Location: login.php");
+    exit;
+}
+
+
+
 require_once "product.php";
 require_once "../includes/db.php";
 
 
 $db = new DB();
 $product = new Product($db);
+
 
 
 $id = $_GET['id'] ?? null;

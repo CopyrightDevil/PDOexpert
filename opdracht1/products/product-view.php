@@ -1,64 +1,55 @@
 <?php
+session_start();
 require_once "product.php";
 require_once "../includes/db.php";
 
 $db = new DB();
 $product = new Product($db);
 
-try {
-    
-    $products = $product->getAllProducts();
-} catch (Exception $e) {
-    echo "Error: " . $e->getMessage();
-}
+$products = $product->getAllProducts();
+$rol = $_SESSION['rol'] ?? null;
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Product Overzicht</title>
+    <title>Producten bekijken</title>
 </head>
 <body>
-    <a href="product-insert.php">Product toevoegen</a>
     <h1>Productenlijst</h1>
+    <br><?php if ($rol == 'beheerder'): ?>
+        <a href="product-insert.php">Product toevoegen</a>
+    <?php endif; ?><br>
+    <br><a href="logout.php">Uitloggen</a><br>
+<br><br>
     <table border="1">
         <thead>
             <tr>
-                <th>ID</th>
                 <th>Naam</th>
                 <th>Prijs</th>
-                <th>Afbeelding</th> 
-                <th>Acties</th>
+                <th>Afbeelding</th>
+                <?php if ($rol == 'beheerder'): ?>
+                    <th>Acties</th>
+                <?php endif; ?>
             </tr>
         </thead>
         <tbody>
-            <?php if (!empty($products)): ?>
-                <?php foreach ($products as $product): ?>
-                    <tr>
-                        <td><?php echo htmlspecialchars($product['id']); ?></td>
-                        <td><?php echo htmlspecialchars($product['naam']); ?></td>
-                        <td><?php echo htmlspecialchars($product['prijs']); ?></td>
-                        <td>
-                            <?php if (!empty($product['foto'])): ?>
-                                <img src="uploads/<?php echo htmlspecialchars($product['foto']); ?>" alt="Product Afbeelding" style="width:100px;">
-                            <?php else: ?>
-                                Geen afbeelding
-                            <?php endif; ?>
-                        </td>
-                        <td>
-                            <a href="product-edit.php?id=<?php echo htmlspecialchars($product['id']); ?>">Bewerken</a>
-                            <a href="product-delete.php?id=<?php echo htmlspecialchars($product['id']); ?>" onclick="return confirm('Weet je zeker dat je dit product wilt verwijderen?');">Verwijderen</a>
-                        </td>
-                    </tr>
-                <?php endforeach; ?>
-            <?php else: ?>
+            <?php foreach ($products as $product): ?>
                 <tr>
-                    <td colspan="5">Geen producten gevonden.</td>
+                    <td><?php echo htmlspecialchars($product['naam']); ?></td>
+                    <td><?php echo htmlspecialchars($product['prijs']); ?></td>
+                    <td><img src="uploads/<?php echo htmlspecialchars($product['foto']); ?>" width="100"></td>
+                    <?php if ($rol == 'beheerder'): ?>
+                        <td>
+                            <a href="product-edit.php?id=<?php echo $product['id']; ?>">Bewerken</a>
+                            <a href="product-delete.php?id=<?php echo $product['id']; ?>" onclick="return confirm('Weet je zeker dat je dit product wilt verwijderen?');">Verwijderen</a>
+                        </td>
+                    <?php endif; ?>
                 </tr>
-            <?php endif; ?>
+            <?php endforeach; ?>
         </tbody>
     </table>
 </body>
 </html>
+
