@@ -10,13 +10,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = $_POST['username'];
     $password = $_POST['password'];
 
-    // Login poging
+    
     if ($user->login($username, $password)) {
-        // Stel sessievariabelen in
+       
         $_SESSION['logged_in'] = true;
-        $_SESSION['rol'] = $user->getRole($username); // Haal de rol op van de user (beheerder/klant)
+        $_SESSION['rol'] = $user->getRole($username); 
 
-        // Redirect naar product-view of dashboard
+        
         header("Location: ../products/product-view.php");
         exit;
     } else {
